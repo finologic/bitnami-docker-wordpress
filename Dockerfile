@@ -1,26 +1,28 @@
-FROM gcr.io/stacksmith-images/ubuntu:14.04-r07
+## BUILDING
+##   (from project root directory)
+##   $ docker build -t finologic-bitnami-docker-wordpress .
+##
+## RUNNING
+##   $ docker run -p 80:80 finologic-bitnami-docker-wordpress
+##
+## CONNECTING
+##   Lookup the IP of your active docker host using:
+##     $ docker-machine ip $(docker-machine active)
+##   Connect to the container at DOCKER_IP:80
+##     replacing DOCKER_IP for the IP of your active docker host
+##
+## NOTES
+##   This is a prebuilt version of Apache.
+##   For more information and documentation visit:
+##     https://github.com/bitnami/bitnami-docker-apache
 
-MAINTAINER Bitnami <containers@bitnami.com>
+FROM gcr.io/bitnami-containers/apache:2.4.20-r0
 
-ENV BITNAMI_APP_NAME=wordpress \
-    BITNAMI_IMAGE_VERSION=4.5.2-r0 \
-    PATH=/opt/bitnami/php/bin:/opt/bitnami/drush:/opt/bitnami/mysql/bin/:$PATH
+LABEL com.bitnami.stacksmith.id="qqe0vso" \
+      com.bitnami.stacksmith.name="finologic/bitnami-docker-wordpress"
 
-# Additional modules required
-RUN bitnami-pkg install php-5.6.21-0 --checksum 1e0ebe2f26edea96b583d8b7ba2bf895b3c03ea40d67dfb1df3bf331c9caad6c
-RUN bitnami-pkg unpack apache-2.4.18-2 --checksum 9722f4f470e036b4ed4f0fe98509e24f7182177b54a268a458af5eb8e7e6370a
-RUN bitnami-pkg install libphp-5.6.21-0 --checksum 8c1f994108eb17c69b00ac38617997b8ffad7a145a83848f38361b9571aeb73e
-RUN bitnami-pkg install mysql-client-10.1.13-1 --checksum e16c0ace5cb779b486e52af83a56367f26af16a25b4ab92d8f4293f1bf307107
+ENV STACKSMITH_STACK_ID="qqe0vso" \
+    STACKSMITH_STACK_NAME="finologic/bitnami-docker-wordpress" \
+    STACKSMITH_STACK_PRIVATE="1" \
+    BITNAMI_CONTAINER_ORIGIN="stacksmith"
 
-# Install wordpress
-RUN bitnami-pkg unpack wordpress-4.5.2-0 --checksum 6908a643c55665564f1e5ee0c868de3c00e39231b4f90cee8511d379557cabac
-
-COPY rootfs /
-
-VOLUME ["/bitnami/wordpress", "/bitnami/apache"]
-
-EXPOSE 80 443
-
-ENTRYPOINT ["/app-entrypoint.sh"]
-
-CMD ["harpoon", "start", "--foreground", "apache"]
